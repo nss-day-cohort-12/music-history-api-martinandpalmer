@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using api_music_history.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,7 +25,7 @@ namespace api_music_history.Controllers
       _context = context;
     }
 
-    // GET: api/values
+    // GET: api/track
     [HttpGet]
     public IActionResult Get()
     {
@@ -32,24 +34,70 @@ namespace api_music_history.Controllers
         return BadRequest(ModelState);
       }
 
-      IQueryable<Track> tracks = from t in _context.Track
-                                 select t;
+      IQueryable<object> tracks = from t in _context.Track
+                                 join a in _context.Album
+                                 on t.AlbumId equals a.AlbumId
+                                 select new
+                                 {
+                                   TrackId = t.TrackId,
+                                   Title = t.Title,
+                                   AlbumId = t.AlbumId,
+                                   AlbumName = a.Title,
+                                   ArtistName = a.Artist,
+                                   AppUserId = t.AppUserId,
+                                   Author = t.Author,
+                                   Genre = t.Genre,
+                                   Year = a.Year
+                                 };
 
       return Ok(tracks);
     }
 
-    // GET api/values/5
-    [HttpGet("{id}")]
-    public string Get(int id)
+    // GET api/track/5 (specific track  by TrackId)
+    [HttpGet("{id}", Name = "GetTrack")]
+    public IActionResult Get(int id)
     {
-      return "value";
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      Track track = _context.Track.Single(t => t.TrackId == id);
+
+      if (track == null)
+      {
+        return NotFound();
+      }
+
+      return Ok(track);
     }
 
-    // POST api/values
+    // POST api/track
     [HttpPost]
-    public void Post([FromBody]string value)
+    public IActionResult Post([FromBody]Track track)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
 
+      _context.Track.Add(track);
+      try
+      {
+        _context.SaveChanges();
+      }
+      catch (DbUpdateException)
+      {
+        if (TrackExists(track.TrackId))
+        {
+          return new StatusCodeResult(StatusCodes.Status409Conflict);
+        }
+        else
+        {
+          throw;
+        }
+      }
+      return CreatedAtRoute("GetTrack", new { id = track.TrackId }, track);
     }
 
     // PUT api/values/5
