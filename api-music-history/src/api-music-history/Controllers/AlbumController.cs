@@ -61,5 +61,10 @@ namespace api_music_history.Controllers
     public void Delete(int id)
     {
     }
+
+    private bool AlbumExists(int id)
+    {
+      return _context.Album.Count(album => album.AlbumId == id) > 0;
+    }
   }
 }
