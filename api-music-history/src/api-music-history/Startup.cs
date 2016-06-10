@@ -1,4 +1,6 @@
-﻿using System;
+﻿using api_music_history.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,6 +30,8 @@ namespace api_music_history
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            var connection = @"Server=(localdb)\mssqllocaldb;Database=MusicHistory;Trusted_Connection=True;";
+            services.AddDbContext<MusicHistoryContext>(options => options.UseSqlServer(connection));
             services.AddMvc();
         }
 
