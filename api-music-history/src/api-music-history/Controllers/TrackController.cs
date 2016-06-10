@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Cors;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace api_music_history.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
+    [EnableCors("AllowDevelopmentEnvironment")]
     public class TrackController : Controller
     {
         // GET: api/values
