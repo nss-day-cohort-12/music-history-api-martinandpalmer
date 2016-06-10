@@ -11,5 +11,9 @@ app.config(['$routeProvider',
         templateUrl: 'partial/TrackList.html',
         controller: 'TrackListController'
       })
+      .when('/login', {
+        templateUrl: 'partial/Auth.html',
+        controller: "AuthController"
+      })
       .otherwise('/');
 }]);
