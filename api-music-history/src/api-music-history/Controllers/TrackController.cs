@@ -34,8 +34,21 @@ namespace api_music_history.Controllers
         return BadRequest(ModelState);
       }
 
-      IQueryable<Track> tracks = from t in _context.Track
-                                 select t;
+      IQueryable<object> tracks = from t in _context.Track
+                                 join a in _context.Album
+                                 on t.AlbumId equals a.AlbumId
+                                 select new
+                                 {
+                                   TrackId = t.TrackId,
+                                   Title = t.Title,
+                                   AlbumId = t.AlbumId,
+                                   AlbumName = a.Title,
+                                   ArtistName = a.Artist,
+                                   AppUserId = t.AppUserId,
+                                   Author = t.Author,
+                                   Genre = t.Genre,
+                                   Year = a.Year
+                                 };
 
       return Ok(tracks);
     }
