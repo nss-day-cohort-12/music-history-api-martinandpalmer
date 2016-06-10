@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using api_music_history.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -59,9 +61,30 @@ namespace api_music_history.Controllers
 
     // POST api/track
     [HttpPost]
-    public void Post([FromBody]string value)
+    public IActionResult Post([FromBody]Track track)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
 
+      _context.Track.Add(track);
+      try
+      {
+        _context.SaveChanges();
+      }
+      catch (DbUpdateException)
+      {
+        if (TrackExists(track.TrackId))
+        {
+          return new StatusCodeResult(StatusCodes.Status409Conflict);
+        }
+        else
+        {
+          throw;
+        }
+      }
+      return CreatedAtRoute("GetTrack", new { id = track.TrackId }, track);
     }
 
     // PUT api/values/5
