@@ -2,7 +2,8 @@
   "name": "frontend-music-history",
   "homepage": "https://github.com/nss-day-cohort-12/music-history-api-martinandpalmer",
   "authors": [
-    "Palmer Harrell <palmerharrell@me.com>"
+    "Palmer Harrell <palmerharrell@me.com>",
+    "Martin Cross <mncross@gmail.com>"
   ],
   "description": "",
   "main": "",
@@ -18,7 +19,7 @@
     "angular": "^1.5.6",
     "angular-route": "^1.5.6",
     "bootstrap": "^3.3.6",
-    "jquery": "^3.0.0",
+    "jquery": "2.2.4",
     "oauth-js": "^0.5.2"
   }
 }
