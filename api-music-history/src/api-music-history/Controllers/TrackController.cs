@@ -23,7 +23,7 @@ namespace api_music_history.Controllers
       _context = context;
     }
 
-    // GET: api/values
+    // GET: api/track
     [HttpGet]
     public IActionResult Get()
     {
@@ -38,14 +38,26 @@ namespace api_music_history.Controllers
       return Ok(tracks);
     }
 
-    // GET api/values/5
-    [HttpGet("{id}")]
-    public string Get(int id)
+    // GET api/track/5 (specific track  by TrackId)
+    [HttpGet("{id}", Name = "GetTrack")]
+    public IActionResult Get(int id)
     {
-      return "value";
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      Track track = _context.Track.Single(t => t.TrackId == id);
+
+      if (track == null)
+      {
+        return NotFound();
+      }
+
+      return Ok(track);
     }
 
-    // POST api/values
+    // POST api/track
     [HttpPost]
     public void Post([FromBody]string value)
     {
