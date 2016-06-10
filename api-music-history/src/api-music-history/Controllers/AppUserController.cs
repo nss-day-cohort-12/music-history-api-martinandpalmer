@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using api_music_history.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,7 +25,7 @@ namespace api_music_history.Controllers
       _context = context;
     }
 
-    // GET: api/values
+    // GET: api/appuser
     [HttpGet]
     public IActionResult Get()
     {
@@ -38,17 +40,51 @@ namespace api_music_history.Controllers
       return Ok(users);
     }
 
-    // GET api/values/5
-    [HttpGet("{id}")]
-    public string Get(int id)
+    // GET api/appuser/5 (specific user  by AppUserId)
+    [HttpGet("{id}", Name = "GetUser")]
+    public IActionResult Get(int id)
     {
-      return "value";
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      AppUser appUser = _context.AppUser.Single(au => au.AppUserId == id);
+
+      if (appUser == null)
+      {
+        return NotFound();
+      }
+
+      return Ok(appUser);
     }
 
-    // POST api/values
+    // POST api/appuser
     [HttpPost]
-    public void Post([FromBody]string value)
+    public IActionResult Post([FromBody]AppUser appUser)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      _context.AppUser.Add(appUser);
+      try
+      {
+        _context.SaveChanges();
+      }
+      catch (DbUpdateException)
+      {
+        if (AppUserExists(appUser.AppUserId))
+        {
+          return new StatusCodeResult(StatusCodes.Status409Conflict);
+        }
+        else
+        {
+          throw;
+        }
+      }
+      return CreatedAtRoute("GetUser", new { id = appUser.AppUserId }, appUser);
     }
 
     // PUT api/values/5
