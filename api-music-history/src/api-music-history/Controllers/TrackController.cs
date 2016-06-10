@@ -25,9 +25,17 @@ namespace api_music_history.Controllers
 
     // GET: api/values
     [HttpGet]
-    public IEnumerable<string> Get()
+    public IActionResult Get()
     {
-      return new string[] { "value1", "value2" };
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      IQueryable<Track> tracks = from t in _context.Track
+                                 select t;
+
+      return Ok(tracks);
     }
 
     // GET api/values/5
