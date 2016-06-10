@@ -33,6 +33,16 @@ namespace api_music_history
             var connection = @"Server=(localdb)\mssqllocaldb;Database=MusicHistory;Trusted_Connection=True;";
             services.AddDbContext<MusicHistoryContext>(options => options.UseSqlServer(connection));
             services.AddMvc();
+
+            // Allow any header and any method on a request from my local development machine
+            services.AddCors(options =>
+            {
+              options.AddPolicy("AllowDevelopmentEnvironment",
+                builder => builder.AllowAnyOrigin()
+                //builder => builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
