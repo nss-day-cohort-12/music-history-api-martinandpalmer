@@ -1,3 +1,7 @@
-<div>
-  
+<div ng-repeat="track in tracks | filter:TrackListController.filterArtistString">
+  <div class="jumbotron">
+    <h1>Song goes here</h1>
+    <h3 ng-click="getTrack()">{{track.Title}}</h3>
+    <h5>on {{track.AlbumName}}</h5>
+  </div>
 </div>
