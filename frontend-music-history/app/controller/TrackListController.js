@@ -23,5 +23,5 @@ app.controller('TrackListController', [
           console.log('APItracks', APItracks);
         },
         reject => console.log(reject)
-      );
-}])
+    );
+}]);

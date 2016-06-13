@@ -14,8 +14,7 @@ app.controller('AuthController', [
             authFactory.setUser(data);
           }
           console.log('data', data);
-          console.log("$location.path('/') should execute here");
-          $location.path('/');
+          window.location.assign('/#/');
         })
       })
     }
