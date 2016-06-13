@@ -27,50 +27,45 @@ namespace api_music_history.Controllers
 
     // GET: api/track (all tracks)
     // GET: api/track?userId=2 (only tracks matching specified userId)
+    // GET: api/track?userName=palmerharrell (only tracks matching specified userName)
     [HttpGet]
-    public IActionResult Get([FromQuery]int? userId)
+    public IActionResult Get([FromQuery]int? userId, [FromQuery]string userName)
     {
       if (!ModelState.IsValid)
       {
         return BadRequest(ModelState);
       }
 
-      IQueryable<object> tracks = from t in _context.Track
-                                 join a in _context.Album
-                                 on t.AlbumId equals a.AlbumId
-                                 select new
-                                 {
-                                   TrackId = t.TrackId,
-                                   Title = t.Title,
-                                   AlbumId = t.AlbumId,
-                                   AlbumName = a.Title,
-                                   ArtistName = a.Artist,
-                                   AppUserId = t.AppUserId,
-                                   Author = t.Author,
-                                   Genre = t.Genre,
-                                   Year = a.Year
-                                 };
-
+      IQueryable<TrackDetails> tracks = from t in _context.Track
+                                  join a in _context.Album
+                                  on t.AlbumId equals a.AlbumId
+                                  join u in _context.AppUser
+                                  on t.AppUserId equals u.AppUserId
+                                  select new TrackDetails
+                                  {
+                                    TrackId = t.TrackId,
+                                    Title = t.Title,
+                                    AlbumId = t.AlbumId,
+                                    AlbumName = a.Title,
+                                    ArtistName = a.Artist,
+                                    AppUserId = t.AppUserId,
+                                    Username = u.Username,
+                                    Author = t.Author,
+                                    Genre = t.Genre,
+                                    Year = a.Year
+                                  };
+      
 
       if (userId != null)
       {
-        tracks = from t in _context.Track
-                 join a in _context.Album
-                 on t.AlbumId equals a.AlbumId
-                 where t.AppUserId == userId
-                 select new
-                 {
-                   TrackId = t.TrackId,
-                   Title = t.Title,
-                   AlbumId = t.AlbumId,
-                   AlbumName = a.Title,
-                   ArtistName = a.Artist,
-                   AppUserId = t.AppUserId,
-                   Author = t.Author,
-                   Genre = t.Genre,
-                   Year = a.Year
-                 };
-        
+        tracks = tracks.Where(t => t.AppUserId == userId);
+        return Ok(tracks);
+      }
+
+      if (userName != null)
+      {
+        tracks = tracks.Where(t => t.Username == userName);
+        return Ok(tracks);
       }
 
       return Ok(tracks);
