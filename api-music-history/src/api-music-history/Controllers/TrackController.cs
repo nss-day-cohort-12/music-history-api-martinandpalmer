@@ -25,9 +25,10 @@ namespace api_music_history.Controllers
       _context = context;
     }
 
-    // GET: api/track
+    // GET: api/track (all tracks)
+    // GET: api/track?userId=2 (only tracks matching specified userId)
     [HttpGet]
-    public IActionResult Get()
+    public IActionResult Get([FromQuery]int? userId)
     {
       if (!ModelState.IsValid)
       {
@@ -49,6 +50,28 @@ namespace api_music_history.Controllers
                                    Genre = t.Genre,
                                    Year = a.Year
                                  };
+
+
+      if (userId != null)
+      {
+        tracks = from t in _context.Track
+                 join a in _context.Album
+                 on t.AlbumId equals a.AlbumId
+                 where t.AppUserId == userId
+                 select new
+                 {
+                   TrackId = t.TrackId,
+                   Title = t.Title,
+                   AlbumId = t.AlbumId,
+                   AlbumName = a.Title,
+                   ArtistName = a.Artist,
+                   AppUserId = t.AppUserId,
+                   Author = t.Author,
+                   Genre = t.Genre,
+                   Year = a.Year
+                 };
+        
+      }
 
       return Ok(tracks);
     }
