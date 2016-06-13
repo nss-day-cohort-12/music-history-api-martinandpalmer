@@ -4,6 +4,7 @@ let app = angular.module("MusicHistory", [
   'ngRoute'
 ]);
 
+
 app.config(['$routeProvider',
   function($routeProvider){
     $routeProvider
@@ -17,3 +18,16 @@ app.config(['$routeProvider',
       })
       .otherwise('/');
 }]);
+
+
+app.run([
+  '$location',
+  'AuthFactory',
+  function($location, authFactory) {
+
+    let isAuth = authFactory.getUser();
+
+    if (!authFactory.getUser()) {
+      $location.path('/login');
+    }
+}])
