@@ -11,7 +11,7 @@ app.controller('TrackListController', [
     APIURI = "http://localhost:5000/api/Track";
     if (authFactory.getUser().alias != null) {
       console.log(`Getting tracks only for ${authFactory.getUser().alias}`);
-      APIURI += `?username=${authFactory.getUser().alias}`;
+      APIURI += `?userName=${authFactory.getUser().alias}`;
     }
 
     $http
